@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a6fd8;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --white: #ffffff;
+            --shadow: 0 10px 25px rgba(0,0,0,0.05);
+            --shadow-hover: 0 15px 35px rgba(0,0,0,0.1);
+            --radius: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+
+        .icon-container {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        h2 {
+            margin: 0 0 1rem;
+            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 1.75rem;
+        }
+
+        p {
+            margin: 0 0 1.5rem;
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .file-info {
+            background: var(--bg-light);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .file-info i {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .file-details h3 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            color: var(--text-dark);
+        }
+
+        .file-details span {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        button i {
+            margin-right: 0.5rem;
+        }
+
+        .loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            margin-top: 1rem;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .success-message {
+            background: var(--success);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .success-message i {
+            margin-right: 0.5rem;
+        }
+
+        .error-message {
+            background: #feb2b2;
+            color: #c53030;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 2rem 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            button {
+                padding: 0.75rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="icon-container">
+            <i class="fas fa-download"></i>
+        </div>
+        
+        <h2>Download Ready</h2>
+        <p>Your file is prepared and ready for download.</p>
+        
+                    <!--<div class="file-info">
+                <i class="fas fa-file-alt"></i>
+                <div class="file-details">
+                    <h3>Document.pdf</h3>
+                    <span>Size: 2.4 MB • Type: PDF Document</span>
+                </div>
+            </div>-->
+            
+            <button id="downloadBtn">
+                <i class="fas fa-download"></i> Download Now
+            </button>
+            
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+            
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i> Download Started Soon!
+            </div>
+            </div>
+
+    <script>
+    const btn = document.getElementById('downloadBtn');
+        const cdnUrl = "https:\/\/cdndiv1.kdaus.workers.dev\/downloadv2\/30438?hash=AgADvB";
+    if (btn) {
+        btn.addEventListener('click', () => {
+            btn.disabled = true;
+            btn.classList.add('loading');
+            btn.innerHTML = 'Downloading';
+            
+            // Show progress bar
+            const progressBar = document.querySelector('.progress-bar');
+            const progress = document.querySelector('.progress');
+            progressBar.style.display = 'block';
+            
+            // Simulate download progress
+            let progressValue = 0;
+            const progressInterval = setInterval(() => {
+                progressValue += Math.random() * 10;
+                if (progressValue >= 100) {
+                    progressValue = 100;
+                    clearInterval(progressInterval);
+                    
+                    // Complete the download
+                    setTimeout(() => {
+                        // Create a hidden <a> element dynamically
+                        const a = document.createElement('a');
+                        a.href = cdnUrl;
+                        a.download = ""; // force download instead of open in browser
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        
+                        // Show success message
+                        document.querySelector('.success-message').style.display = 'flex';
+                        progressBar.style.display = 'none';
+                        
+                        // Reset button after a delay
+                        setTimeout(() => {
+                            btn.classList.remove('loading');
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="fas fa-download"></i> Download Again';
+                            document.querySelector('.success-message').style.display = 'none';
+                        }, 8000);
+                    }, 500);
+                }
+                progress.style.width = progressValue + '%';
+            }, 200);
+        });
+    }
+        </script>
+</body>
+</html>
